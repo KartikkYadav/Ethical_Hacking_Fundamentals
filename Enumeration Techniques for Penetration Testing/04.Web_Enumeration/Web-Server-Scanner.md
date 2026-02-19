@@ -118,3 +118,105 @@ Basic Scan
 ### Scan CGI Directories on Specific Port
 
     nikto -C all -h 192.168.1.239 -port 2222
+
+
+## 🔍 Nikto Scanning Guide
+### 🧪 Scan CGI Directories
+    
+    nikto -Cgidirs all -h 192.168.1.239
+    nikto -Cgidirs all -h 192.168.1.239 -port 2222
+
+### 📄 Scan Targets from File
+
+    nikto -h targets.txt
+
+### 📢 Verbose Output
+- Perform scan with verbose output:
+
+      nikto -h http://192.168.1.239 -Display V
+
+- Verbose CGI scanning:
+
+      nikto -Cgidirs all -h 192.168.1.239 -port 2222 -Display V
+
+### ❌ Disabling SSL, DNS Lookups, 404 Detection
+- Disable DNS lookup and SSL:
+
+      nikto -h 192.168.1.239 -nolookup -nossl
+
+- Disable HTTP 404 detection:
+
+      nikto -h 192.168.1.239 -no404
+
+### 🌐 Scanning Different Ports and HTTPS Sites
+- Scan server on port 81:
+
+      nikto -h http://192.168.1.239:81
+
+- Scan HTTPS site:
+
+      nikto -h https://192.168.1.239/demosite/
+
+### 🔌 Using Specific Plugins
+- Apache XSS expectation plugin:
+
+      nikto -Plugins "apache_expect_xss(verbose,debug)" -h 192.168.1.239 -port 2222
+
+- Shellshock vulnerability plugin:
+            
+      nikto -Plugins "shellshock(verbose)" -h 192.168.1.239 -port 2222
+      nikto -Plugins "shellshock" -h 192.168.1.239 -port 2222
+
+### ⚙️ Nikto Tuning Options
+
+- Tuning allows targeting specific vulnerabilities during scans.
+
+            Code	Type
+            1	Interesting File / Seen in Logs
+            2	Misconfiguration / Default File
+            3	Information Disclosure
+            4	Injection (XSS/Script/HTML)
+            5	Remote File Retrieval - Inside Web Root
+            6	Denial of Service
+            7	Remote File Retrieval - Server Wide
+            8	Command Execution / Remote Shell
+            9	SQL Injection
+            0	File Upload
+            a	Authentication Bypass
+            b	Software Identification
+            c	Remote Source Inclusion
+            x	Reverse Tuning Options
+
+### 🧪 Tuning Examples
+- Scan for interesting files:
+
+      nikto -h http://192.168.1.239/ -Tuning 1
+
+- Scan for misconfigurations:
+
+      nikto -h http://192.168.1.239/ -Tuning 2
+
+- Scan for information disclosure:
+
+      nikto -h http://192.168.1.239/ -Tuning 3
+
+- Scan all except specific tuning:
+
+      nikto -C all -h 192.168.1.239 -port 80 -Tuning x
+
+### 🕵️ Custom User-Agent & Proxy Usage
+- Set custom user-agent:
+
+      nikto -h http://192.168.1.239 -useragent "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1"
+
+- Use proxy with custom user-agent:
+
+      nikto -h http://192.168.1.236:2222 \
+      -useragent "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1" \
+      -useproxy http://127.0.0.1:8080
+
+### 💡 Extra Tips
+
+- Always run Nikto and WhatWeb with -ssl when testing HTTPS endpoints
+- Keep Nikto updated for latest vulnerability checks
+- Avoid DoS tuning on live/sensitive systems without permission

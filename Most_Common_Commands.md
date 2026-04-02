@@ -8,3 +8,7 @@
 ##Curl =
 
 curl -IL https://www.inlanefreight.com
+
+## Gobuster
+
+     gobuster dir -u http://154.57.164.66:31906 -w /usr/share/seclists/Discovery/Web-Content/common.txt

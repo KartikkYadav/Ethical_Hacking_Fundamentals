@@ -15,3 +15,11 @@ curl -IL https://www.inlanefreight.com
 
 ## Netcat
     nc -nlvp 443
+
+### FTP
+
+    hydra -L users.list -P passwords.list ftp://10.129.57.179:2121 -v
+
+For single  usesrs 
+
+    hydra -l bob -P passwords.list ftp://10.129.57.179:2121 -v

@@ -18,8 +18,14 @@ curl -IL https://www.inlanefreight.com
 
 ### FTP
 
-    hydra -L users.list -P passwords.list ftp://10.129.57.179:2121 -v
+- Ftp login
 
-For single  usesrs 
+      ftp 127.0.0.1 2121
 
-    hydra -l bob -P passwords.list ftp://10.129.57.179:2121 -v
+- Brute Force
+  
+      hydra -L users.list -P passwords.list ftp://10.129.57.179:2121 -v
+
+- For single  usesrs 
+
+      hydra -l bob -P passwords.list ftp://10.129.57.179:2121 -v

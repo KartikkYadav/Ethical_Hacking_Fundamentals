@@ -29,3 +29,17 @@ curl -IL https://www.inlanefreight.com
 - For single  usesrs 
 
       hydra -l bob -P passwords.list ftp://10.129.57.179:2121 -v
+
+## DNS Enum
+
+To find the subdomain of doamin we brute force subdomain and try to resolve from the DNS Server.
+
+- dndenum tool
+
+      dnsenum --enum inlanefreight.com -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -r
+
+- subfinder
+
+     subfinder -d domain.com
+
+  

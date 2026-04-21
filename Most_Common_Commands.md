@@ -42,4 +42,24 @@ To find the subdomain of doamin we brute force subdomain and try to resolve from
 
      subfinder -d domain.com
 
+## CURL
+
+- Basic Syntax
+
+      curl http://example.com
+
+- GET (default)
+
+      curl http://example.com
+
+- POST
+
+      curl -X POST http://example.com
   
+-PUT
+  
+     curl -X PUT http://example.com
+
+-DELETE
+    
+    curl -X DELETE http://example.com

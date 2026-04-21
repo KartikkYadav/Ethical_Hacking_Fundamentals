@@ -48,6 +48,10 @@ To find the subdomain of doamin we brute force subdomain and try to resolve from
 
       curl http://example.com
 
+- Only for Header
+
+      CURL -I http://example.com
+  
 - GET (default)
 
       curl http://example.com
@@ -56,10 +60,10 @@ To find the subdomain of doamin we brute force subdomain and try to resolve from
 
       curl -X POST http://example.com
   
--PUT
+- PUT
   
-     curl -X PUT http://example.com
+      curl -X PUT http://example.com
 
--DELETE
+- DELETE
     
-    curl -X DELETE http://example.com
+      curl -X DELETE http://example.com

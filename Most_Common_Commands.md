@@ -64,15 +64,11 @@ To find the subdomain of doamin we brute force subdomain and try to resolve from
   
       curl -X PUT http://example.com
 
+- DELETE
+    
+      curl -X DELETE http://example.com
+
 ## Hashcat Command
 for MD5 = 
 
     hashcat -m 0 hash.txt /usr/share/wordlist/rockyou.txt
-
-
-
-    hashcat -m 0 hash.txt wordlist.txt
-
-- DELETE
-    
-      curl -X DELETE http://example.com

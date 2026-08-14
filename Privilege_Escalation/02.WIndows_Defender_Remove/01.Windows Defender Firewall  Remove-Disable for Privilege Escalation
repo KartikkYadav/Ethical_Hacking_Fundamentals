@@ -1,0 +1,325 @@
+# Windows Defender Firewall — Remove/Disable for Privilege Escalation
+
+Class date: 31/07/2026 • Two-part practical demo on Windows Server 2025 (VM: Windows-Server-Privilege-Esc).
+
+**Why: During privilege escalation, Windows Defender (real-time protection + Microsoft Defender Antivirus) will detect and delete your exploit/payload. Before running any exploit, Defender must be disabled or removed.**
+
+---
+
+## Part 1 — Video: 18.Window-defender-remove.mkv (Hindi Explanation)
+
+## Video 1: 18.Window-defender-remove.mkv — Spoken Explanation (Hindi)
+
+### Video Overview
+
+Hindi explanation of how to **remove/disable Windows Defender** so that exploits
+
+and payloads are not blocked during penetration testing / privilege escalation.
+
+#### Why disable Defender
+
+- Jab aap privilege escalation mein exploit chalate hain, **Windows Defender pakad ke delete kar deta hai**
+- `nc.exe` (netcat), `msfvenom` payloads, exploit files — sabko Defender detect karke remove kar deta hai
+- Isliye pehle Defender ko disable/remove karna zaroori hai
+- Penetration testing lab mein antivirus bypass karne ka sabse bada challenge yahi hai
+
+#### Tamper Protection — sabse pehle
+
+- **Tamper Protection ON** hone par aap Defender ko disable nahi kar sakte
+- Jab tak Tamper Protection on hai, tab tak koi bhi change allow nahi karega
+- Navigation: **Windows Security → Virus & threat protection → Manage settings → Tamper Protection**
+- Tamper Protection ko OFF karna zaroori hai, warna baaki sab kaam nahi chalega
+
+### Method 1 — Group Policy Registry Keys se Disable
+
+PowerShell (as Administrator) se:
+
+```powershell
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 1 -Type DWord
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableOnAccessProtection" -Value 1 -Type DWord
+```
+
+### Method 2 — Stop & Disable Services
+
+```powershell
+Stop-Service -Name "WinDefend" -Force
+Stop-Service -Name "WdNisSvc" -Force
+Stop-Service -Name "Sense" -Force
+```
+
+Services restart hone par phir start ho jati hain, isliye startup type bhi disable karo:
+
+```powershell
+Set-Service -Name "WinDefend" -StartupType Disabled
+Set-Service -Name "WdNisSvc" -StartupType Disabled
+Set-Service -Name "Sense" -StartupType Disabled
+```
+
+### Method 3 — Offline (Image) se Defender Package Remove
+
+- Group policy turn off → stop & disable services → **remove Defender package from the image**
+- Online nahi kar sakte, offline image mein jake package remove karna hota hai
+- `DISM` command se offline image mein Defender package uninstall
+
+### UAC aur Safe Mode
+
+- **UAC** check karo — kabhi kabhi UAC bhi block kar deta hai
+- `cmd` ko **Run as Administrator** se chalao
+- Kuch commands **Safe Mode** mein chalani padti hain (services block hain)
+- WinRE (Windows Recovery Environment) se bhi commands chala sakte ho
+
+### Verification (EICAR Test File)
+
+- EICAR test file download karke verify karo ki Defender off hai ya nahi
+- `malware test file` / EICAR — agar download ho gaya aur **no detection** = Defender off
+- Check: `Settings → Security & Privacy → Windows Security` → koi detection nahi honi chahiye
+- `Get-Service -Name WinDefend, WdNisSvc, Sense | Select-Object Name, Status, StartType`
+
+### Important Points (Batch ka schedule)
+
+- Kal exam hai, toh **system format mat karna** aur Kali reload mat karna
+- Controller banane mein lagta hai ~1 ghanta (minimum 1.5–2 ghante)
+- **nc.exe** aur **msfvenom payloads** pehle se rakh lo
+- Iska matlab nahi ki antivirus hone se kaam nahi chalega — test environment mein jab tak
+
+bypass nahi karte, tab tak antivirus active rahega
+
+- Antivirus bypass ke liye: payload generation + obfuscation + Defender disable
+
+---
+
+## Part 2 — Video: 2026-07-31 16-28-36.mp4 (Lab Demo)
+
+## Video 2: Windows Defender Remove — Lab Demo (Windows Server Privilege Escalation)
+
+**Source:** `2026-07-31 16-28-36.mp4` (Windows Server 2025 VM, silent screen recording — content from OCR)
+
+### Overview
+
+Screen recording of a **Windows Server Privilege Escalation lab** on Oracle VirtualBox.
+
+VM name: `Windows-Server-Privilege-Esc` (Windows Server 2025, 64-bit, 8GB RAM, 2 CPUs).
+
+Goal: **Remove/disable Windows Defender so exploits can run during privilege escalation.**
+
+Reference doc used throughout: *Microsoft-Defender-Management* guide (Enterprise-Windows-Infrastructure-Security / Windows-Commands).
+
+---
+
+### Part 1 — Disable Defender via Group Policy Registry Keys (Method 1)
+
+#### 1.1 Run PowerShell as Administrator
+
+#### 1.2 Disable Microsoft Defender Antivirus
+
+```powershell
+Set-ItemProperty `
+  -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" `
+  -Name "DisableAntiSpyware" `
+  -Value 1 `
+  -Type DWord
+```
+
+#### 1.3 Disable Real-Time Protection
+
+```powershell
+Set-ItemProperty `
+  -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" `
+  -Name "DisableOnAccessProtection" `
+  -Value 1 `
+  -Type DWord
+```
+
+**Important:** Tamper Protection must be disabled before registry modifications, Group Policy changes, or service configuration.
+
+Navigate to: `Windows Security → Virus & threat protection → Manage settings → Tamper Protection`
+
+---
+
+### Part 2 — Stop and Disable Defender Services (Method 2)
+
+Microsoft Defender services are protected by Windows. These commands typically require:
+
+- Safe Mode
+- Local SYSTEM privileges (for example, PsExec)
+- Windows Recovery Environment (WinRE)
+
+#### 2.1 Stop Defender Services
+
+```powershell
+Stop-Service -Name "WinDefend" -Force
+Stop-Service -Name "WdNisSvc" -Force
+Stop-Service -Name "Sense" -Force
+```
+
+Note: On this lab, services were already removed → "Cannot find any service with service name 'WinDefend'" errors are expected.
+
+#### 2.2 Disable Service Startup
+
+```powershell
+Set-Service -Name "WinDefend" -StartupType Disabled
+Set-Service -Name "WdNisSvc" -StartupType Disabled
+Set-Service -Name "Sense" -StartupType Disabled
+```
+
+#### 2.3 Disable Services via Registry
+
+A reboot is required.
+
+---
+
+### Part 3 — Getting SYSTEM via PsExec (Sysinternals)
+
+#### 3.1 Download PSTools
+
+- Downloaded Chrome installer (ChromeSetup.exe) to get a browser working in the VM
+- Searched Google for "PsExec Sysinternals" → downloaded PSTools.zip from Microsoft Learn
+- Extracted to `C:\Users\Administrator\Downloads\PSTools\` → contains `PsExec.exe`, `PsExec64.exe`, `psfile.exe`, `PsGetsid.exe`, `PsInfo.exe`, etc.
+
+#### 3.2 Get SYSTEM shell with PsExec
+
+Open **Command Prompt** (as Administrator) and run:
+
+```powershell
+C:\Users\Administrator\Downloads\PSTools\PsExec64.exe -i -s powershell.exe
+```
+
+- `-s` → Run the remote process in the **System account**
+- `-i` → Run the program so that it interacts with the desktop of the specified session
+- `-accepteula` → Suppress license dialog
+
+Verify with `whoami` → shows `nt authority\system`.
+
+#### 3.3 (Alternative) PsExec to spawn PowerShell in System context
+
+```powershell
+psexec -i -s powershell.exe
+```
+
+---
+
+### Part 4 — Disable Defender Core Services via Registry (Notepad script)
+
+Created a PowerShell script `1.ps1` in `C:\Users\Administrator\Documents\`:
+
+```powershell
+# 1. Disable Microsoft Defender Core Services
+$services = @("WinDefend", "WdNisSvc", "Sense", "WdBoot", "WdFilter", "SecurityHealthService")
+foreach ($service in $services) {
+    $path = "HKLM:\SYSTEM\CurrentControlSet\Services\$service"
+    if (Test-Path $path) {
+        Set-ItemProperty -Path $path -Name "Start" -Value 4 -Type DWord
+        Write-Host "Disabled service: $service" -ForegroundColor Green
+    }
+}
+
+# 2. Enforce Group Policy Registry Keys to Disable Defender
+$gpPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender"
+```
+
+Ran it in Safe Mode:
+
+```powershell
+cd C:\Users\Administrator\Documents
+.\1.ps1
+```
+
+Output: `Disabled service: WinDefend`
+
+---
+
+### Part 5 — Boot into Safe Mode & Use Hiren's BootCD PE (WinRE) for Offline Registry Edit
+
+#### 5.1 Boot into Safe Mode
+
+- Restart → Choose an option → Troubleshoot → Advanced options → Startup Settings → Restart → Safe Mode
+- In Safe Mode, PowerShell was usable to run the `1.ps1` disable script
+
+#### 5.2 Hiren's BootCD PE (WinRE) — Offline SYSTEM hive edit
+
+- Booted VM with **Hiren's BootCD PE** ISO (attached via VirtualBox storage)
+- From WinRE command prompt, load the offline SYSTEM hive:
+
+```powershell
+reg load HKLM\OFFLINE_SYSTEM C:\Windows\System32\config\SYSTEM
+The operation completed successfully.
+```
+
+- Used **Notepad++** to build multiple `reg add` commands targeting `HKLM\OFFLINE_SYSTEM\...` to flip service start values (Start=4 Disabled) for Defender services
+- Ran them sequentially → each returned `The operation completed successfully.`
+
+---
+
+### Part 6 — Verification after reboot
+
+- After rebooting into normal Windows Server 2025, checked services:
+
+```powershell
+Get-Service -Name WinDefend, WdNisSvc, Sense | Select-Object Name, Status, StartType
+```
+
+→ Services not found (already removed/disabled — expected on this lab)
+
+#### 6.1 EICAR test to confirm Defender is OFF
+
+- Downloaded **EICAR test file** from eicar.org (anti-malware test file, `eicar.com` / `eicar.com.txt`)
+- In normal state, Microsoft Defender blocked it ("eicar_com.zip was blocked as unsafe")
+- After disable, **eicar.com downloaded successfully and was NOT blocked** → confirms Defender is fully disabled
+
+#### 6.2 Windows Security status
+
+- Opened `Settings → Privacy & security → Windows Security`
+- Virus & threat protection / Firewall & network protection pages show no active threats
+- Defender no longer interfering
+
+---
+
+### Key Takeaways (for Privilege Escalation)
+
+1. **Windows Defender will delete your exploit/payload** during privilege escalation — must be disabled first.
+
+2. **Disable order matters:**
+
+- Tamper Protection off (GUI) → registry policy keys (`DisableAntiSpyware`, `DisableOnAccessProtection`) → stop/disable services (`WinDefend`, `WdNisSvc`, `Sense`) → service Start=4 via registry.
+
+3. **SYSTEM-level access bypasses the protected services** — use `PsExec64.exe -i -s powershell.exe` for an NT AUTHORITY\SYSTEM shell.
+
+4. **Safe Mode / WinRE (Hiren's BootCD PE)** lets you edit the offline `SYSTEM` hive when Defender protections block in-guest changes.
+
+5. **Verify with EICAR file** — if it downloads & runs without being quarantined, Defender is off.
+
+---
+
+## Quick Command Cheat-Sheet
+
+```powershell
+# 1. Disable via Group Policy registry keys (PowerShell as Admin)
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 1 -Type DWord
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableOnAccessProtection" -Value 1 -Type DWord
+
+# 2. Stop Defender services (needs Safe Mode / SYSTEM / WinRE)
+Stop-Service -Name "WinDefend" -Force
+Stop-Service -Name "WdNisSvc" -Force
+Stop-Service -Name "Sense" -Force
+
+# 3. Disable service startup
+Set-Service -Name "WinDefend" -StartupType Disabled
+Set-Service -Name "WdNisSvc" -StartupType Disabled
+Set-Service -Name "Sense" -StartupType Disabled
+
+# 4. SYSTEM shell via PsExec (Sysinternals)
+C:\Users\Administrator\Downloads\PSTools\PsExec64.exe -i -s powershell.exe
+whoami   # -> nt authority\system
+```
+
+Note: Beginning with Windows 10 Version 2004, the DisableAntiSpyware registry value is ignored on most consumer editions unless a supported third-party antivirus product is registered. For servers, disabling the services + registry Start=4 (via Safe Mode / Hiren's BootCD PE / offline SYSTEM hive) is the reliable method.
+
+---
+
+## Verification (EICAR Test)
+
+Download the EICAR anti-malware test file (eicar.org). If it downloads and runs without being quarantined, Defender is fully disabled.
+
+```powershell
+Get-Service -Name WinDefend, WdNisSvc, Sense | Select-Object Name, Status, StartType
+```

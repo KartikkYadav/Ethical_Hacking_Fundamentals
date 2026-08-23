@@ -72,3 +72,7 @@ To find the subdomain of doamin we brute force subdomain and try to resolve from
 for MD5 = 
 
     hashcat -m 0 hash.txt /usr/share/wordlist/rockyou.txt
+
+## Evil Winrm Command
+
+    evil-winrm -i 10.129.159.203 -u 'sql_dev' -p strong_password'

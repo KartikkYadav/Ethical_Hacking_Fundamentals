@@ -5,7 +5,7 @@
   nmap --script  192.168.1.1
 
 
-##Curl =
+## Curl =
 
 curl -IL https://www.inlanefreight.com
 

@@ -76,3 +76,7 @@ for MD5 =
 ## Evil Winrm Command
 
     evil-winrm -i 10.129.159.203 -u 'sql_dev' -p strong_password'
+
+## RDP 
+
+    xfreerdp /v:10.129.43.43 /u:htb-student /p:'HTB_@cademy_stdnt!' /cert:ignore

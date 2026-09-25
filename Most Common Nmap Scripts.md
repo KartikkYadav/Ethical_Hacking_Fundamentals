@@ -4,6 +4,18 @@ A practical, pentester-focused list of the most commonly used Nmap NSE scripts, 
 
 ---
 
+Grab the Banner : 
+
+    curl -k -I https://<TARGET>/
+
+    curl -k -I https://125.20.47.198/
+
+You can also use Nmap:
+
+    nmap -Pn -p 443 --script http-server-header 125.20.47.198
+
+
+
 # 🌐 1. HTTP / Web Enumeration (VERY IMPORTANT)
 
 ```
